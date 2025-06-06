@@ -8,7 +8,8 @@ import {
   Heading,
   Input,
   Text,
-  VStack
+  VStack,
+  CloseButton
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -308,7 +309,7 @@ export default function FeatureCards() {
                       )}
 
                       {previewURL && (
-                        <Box
+                        <CloseButton
                           position="absolute"
                           top="-2"
                           right="-2"
@@ -318,7 +319,7 @@ export default function FeatureCards() {
                             setFileObject(null);
                             setApiResponse(null);
                           }}
-                        >x</Box>
+                        />
                       )}
                     </Box>
 

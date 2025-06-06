@@ -171,6 +171,7 @@ Ngoài ra, tôi cũng hỗ trợ:
                         align="stretch"
                         p={4}
                         maxH="80vh"
+                        maxW="100vh"
                         overflowY="auto"
                         bg="rgba(0, 0, 0, 0.3)"
                         borderRadius="lg"
