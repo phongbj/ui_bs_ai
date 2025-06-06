@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  allowedDevOrigins: ['chatbox.bacsi.com'],
+  output: 'standalone', 
+  webpack: (config) => {
+    config.resolve = {
+      ...config.resolve,
+      fallback: {
+        ...(config.resolve?.fallback || {}),
+        canvas: false,
+      },
+    };
+    config.cache = false;
+    return config;
+  },
 };
 
 export default nextConfig;

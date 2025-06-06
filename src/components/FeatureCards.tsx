@@ -1,4 +1,3 @@
-import { CloseButton } from "@chakra-ui/icons";
 import {
   AspectRatio,
   Box,
@@ -309,7 +308,7 @@ export default function FeatureCards() {
                       )}
 
                       {previewURL && (
-                        <CloseButton
+                        <Box
                           position="absolute"
                           top="-2"
                           right="-2"
@@ -319,7 +318,7 @@ export default function FeatureCards() {
                             setFileObject(null);
                             setApiResponse(null);
                           }}
-                        />
+                        >x</Box>
                       )}
                     </Box>
 
