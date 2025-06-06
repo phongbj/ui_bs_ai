@@ -1,0 +1,164 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+}
+ 
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+  serviceUser   ServiceUser?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String  @unique
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User?   @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@index([userId])
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
+
+// ServiceUser model that extends User
+model ServiceUser {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deleteFlag Boolean   @default(false)
+  deleteDate DateTime?
+  
+  credits   Credit[]
+  projects  Project[]
+  resources Resource[]
+  logs      ServiceUserLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Credit model for ServiceUser
+model Credit {
+  id            String      @id @default(cuid())
+  serviceUserId String
+  serviceUser   ServiceUser @relation(fields: [serviceUserId], references: [id], onDelete: Cascade)
+  balance       Float       @default(0)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([serviceUserId])
+}
+
+// Project model for ServiceUser
+model Project {
+  id            String      @id @default(cuid())
+  serviceUserId String
+  serviceUser   ServiceUser @relation(fields: [serviceUserId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  status        String      @default("active")
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([serviceUserId])
+}
+
+// Resource management model
+model Resource {
+  id            String      @id @default(cuid())
+  serviceUserId String
+  serviceUser   ServiceUser @relation(fields: [serviceUserId], references: [id], onDelete: Cascade)
+  type          String      // e.g., "storage", "compute", "bandwidth"
+  amount        Float
+  unit          String      // e.g., "GB", "hours", "MB/s"
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([serviceUserId])
+}
+
+// Log collection model for ServiceUser
+model ServiceUserLog {
+  id            String      @id @default(cuid())
+  serviceUserId String
+  serviceUser   ServiceUser @relation(fields: [serviceUserId], references: [id], onDelete: Cascade)
+  action        String      // e.g., "login", "update_profile", "project_create"
+  details       String?     @db.Text
+  ipAddress     String?
+  userAgent     String?
+  
+  createdAt     DateTime    @default(now())
+
+  @@index([serviceUserId])
+  @@index([action])
+  @@index([createdAt])
+}

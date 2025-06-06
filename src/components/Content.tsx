@@ -37,12 +37,20 @@ export default function Content({ mode }: ContentProps) {
     const [inputText, setInputText] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
-    const [sessionId, setSessionId] = useState<string>(() => {
-        const local = localStorage.getItem('chat_session_id');
-        const generated = local || uuidv4();
-        localStorage.setItem('chat_session_id', generated);
-        return generated;
-    });
+    const [sessionId, setSessionId] = useState("");
+    
+    useEffect(() => {
+    if (typeof window !== "undefined") {
+      const local = localStorage.getItem("chat_session_id");
+      if (local) {
+        setSessionId(local);
+      } else {
+        const generated = uuidv4();
+        localStorage.setItem("chat_session_id", generated);
+        setSessionId(generated);
+      }
+    }
+    }, []);
 
     const handleSend = async () => {
         const trimmed = inputText.trim();
@@ -296,9 +304,9 @@ export default function Content({ mode }: ContentProps) {
 
                 {/* 4. Spinner loading (nếu đang load) */}
                 {loading && (
-                    <VStack colorPalette="teal" mb={32}>
-                        <Spinner color="colorPalette.600" />
-                        <Text color="colorPalette.600">Loading...</Text>
+                    <VStack mb={32}>
+                        <Spinner />
+                        <Text >Loading...</Text>
                     </VStack>
                 )}
             </Box>
