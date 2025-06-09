@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -19,7 +19,6 @@ import { USER_NAME } from "@/config/const";
 import LoginModal from "./LoginModal";
 
 export default function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
 
@@ -43,13 +42,8 @@ export default function Header() {
       console.error("Logout error:", err);
     } finally {
       setIsLoggingOut(false);
-      setIsAuthenticated(false);
     }
   };
-
-  useEffect(() => {
-    setIsAuthenticated(isLogin());
-  }, []);
 
   return (
     <Box
@@ -58,6 +52,7 @@ export default function Header() {
       py={2}
       boxShadow="sm"
       position="sticky"
+      w={"full"}
       top="0"
       zIndex="10"
     >
@@ -82,7 +77,7 @@ export default function Header() {
             </Text>
           </Link>
 
-          {isAuthenticated ? (
+          {isLogin() ? (
             <Button
               size="sm"
               color="white"
@@ -93,7 +88,7 @@ export default function Header() {
               Logout
             </Button>
           ) : (
-            <LoginModal onLoginSuccess={() => setIsAuthenticated(true)}>
+            <LoginModal onLoginSuccess={() => {}}>
               <Dialog.Trigger asChild>
                 <Button size="sm" color="white" bg="blue.600">
                   Dành cho Bác sĩ

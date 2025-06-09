@@ -1,21 +1,13 @@
 "use client";
 
-import { useState, KeyboardEvent, useEffect } from "react";
 import {
     Box,
-    Flex,
     Heading,
-    IconButton,
-    Spinner,
-    Text,
-    Textarea,
-    VStack,
-    Portal,
     Stack,
+    Text,
+    VStack
 } from "@chakra-ui/react";
 import Image from 'next/image';
-import { FiSend } from "react-icons/fi";
-import { v4 as uuidv4 } from 'uuid';
 import FeatureCards from "./FeatureCards";
 import VideoPlaylist from "./VideoPlaylist";
 
@@ -29,75 +21,9 @@ export type Message = {
     imageUrl?: string;
 };
 
-const API_BASE = 'http://localhost:8000';
-
 export default function Content({ mode }: ContentProps) {
     const videoSources = ["/bongda.mp4", "/traicay.mp4", "/xe.mp4"];
-    const [inputText, setInputText] = useState("");
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [sessionId, setSessionId] = useState("");
-    
-    useEffect(() => {
-    if (typeof window !== "undefined") {
-      const local = localStorage.getItem("chat_session_id");
-      if (local) {
-        setSessionId(local);
-      } else {
-        const generated = uuidv4();
-        localStorage.setItem("chat_session_id", generated);
-        setSessionId(generated);
-      }
-    }
-    }, []);
 
-    const handleSend = async () => {
-        const trimmed = inputText.trim();
-        if (!trimmed) return;
-
-        setMessages((prev) => [...prev, { text: trimmed, sender: 'user' as const }]);
-        setInputText("");
-        setLoading(true);
-
-        try {
-            const res = await fetch(`${API_BASE}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    session_id: sessionId,
-                    messages: [{ role: 'user', content: trimmed }],
-                    prompt_type: 'default',
-                    system_prompt: undefined,
-                }),
-            });
-
-            const data = await res.json();
-            setMessages((prev) => [...prev, { text: data.response, sender: 'Bot' }]);
-        } catch (error) {
-            console.error('❌ Error sending message:', error);
-            setMessages((prev) => [...prev, { text: '⚠️ Lỗi khi gửi tin nhắn.', sender: 'Bot' }]);
-        }
-
-        setLoading(false);
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
-    };
-
-    useEffect(() => {
-        const localId = localStorage.getItem('chat_session_id');
-        if (localId) {
-            setSessionId(localId);
-        } else {
-            const generated = uuidv4();
-            localStorage.setItem('chat_session_id', generated);
-            setSessionId(generated);
-        }
-    }, [messages]);
 
     return (
         <>
@@ -139,30 +65,42 @@ export default function Content({ mode }: ContentProps) {
                 <VStack className="text-white" align="start" gap={4}>
                     {mode === "about" && (
                         <>
-                            <Heading size={"3xl"}>Introduction to </Heading>
+                            <Heading mt={5} size={"3xl"}>Các Chức Năng Chính của Trang Web Phân Tích Ảnh Y Tế</Heading>
                             <Text>
-                                🚀 Welcome to the introduction page of our project! In this project,
-                                
+                               Trang web phân tích ảnh y tế cung cấp các chức năng chính như phân loại hình ảnh, xác định đối tượng và phân vùng ảnh chi tiết, giúp bác sĩ chẩn đoán bệnh một cách nhanh chóng và chính xác.
                             </Text>
 
                             <Text>
-                                 🌟
+                                1. Phân Loại Hình Ảnh
+Chức năng phân loại hình ảnh của trang web này sử dụng các thuật toán học máy để tự động phân loại hình ảnh y tế vào các danh mục khác nhau. Ví dụ, nó có thể phân biệt giữa hình ảnh X-quang phổi, MRI vú, hoặc PET/CT phổi, giúp bác sĩ lâm sàng nhanh chóng xác định loại hình ảnh và tiến hành chẩn đoán phù hợp.
+Việc phân loại hình ảnh tự động giúp tiết kiệm thời gian cho các chuyên gia y tế và giảm thiểu sai sót trong quá trình phân loại thủ công. Điều này đặc biệt quan trọng trong các tình huống khẩn cấp, nơi thời gian là yếu tố then chốt để cứu sống bệnh nhân.
+
                             </Text>
 
                             <Text>
-                                🔍 
+                                2. Xác Định Đối Tượng
+Chức năng xác định đối tượng cho phép hệ thống tự động xác định và làm nổi bật các đối tượng quan trọng trong hình ảnh y tế, như các tổn thương, khối u, hoặc các bất thường khác. Điều này giúp bác sĩ tập trung vào những khu vực cần chú ý nhất và cải thiện độ chính xác của chẩn đoán.
+Sử dụng các thuật toán tiên tiến, hệ thống có thể phát hiện các chi tiết nhỏ mà mắt thường khó nhận ra, từ đó giúp chẩn đoán bệnh ở giai đoạn sớm. Điều này đặc biệt hữu ích trong việc phát hiện ung thư và các bệnh lý nghiêm trọng khác.
+
                             </Text>
 
                             <Text>
-                                🦄 
+                               3. Phân Vùng Ảnh Chi Tiết
+Hệ thống có khả năng phân vùng hình ảnh y tế thành các vùng cụ thể, giúp tách biệt và phân tích từng phần của hình ảnh. Ví dụ, trong hình ảnh MRI não, hệ thống có thể phân vùng các vùng não khác nhau và xác định bất kỳ tổn thương nào một cách chi tiết.
+Việc phân vùng ảnh chi tiết cho phép các bác sĩ có cái nhìn sâu sắc hơn về cấu trúc và chức năng của các cơ quan trong cơ thể. Điều này giúp họ đưa ra các quyết định điều trị chính xác hơn và theo dõi tiến triển của bệnh một cách hiệu quả.
+
                             </Text>
 
                             <Text>
-                                ✨
+                                Ứng Dụng Thực Tế và Lợi Ích
+Trang web phân tích ảnh y tế có nhiều ứng dụng thực tế, bao gồm cải thiện chẩn đoán và cá nhân hóa chăm sóc sức khỏe, nâng cao trải nghiệm và kết quả điều trị cho bệnh nhân.
+
                             </Text>
 
                             <Text>
-                               
+                               Tiết kiệm thời gian
+Quá trình phân tích tự động giúp bác sĩ tiết kiệm thời gian, tập trung vào việc đưa ra quyết định điều trị.
+
                             </Text>
                         </>
                     )}
@@ -211,38 +149,6 @@ export default function Content({ mode }: ContentProps) {
                             </Box>
                         </>
                     )}
-
-                    {mode === "about" && (
-                        <VStack gap={4} w="full" mb={24}>
-                            {messages.map((msg, i) => (
-                                <Box
-                                    key={i}
-                                    p={3}
-                                    borderRadius="xl"
-                                    w="fit-content"
-                                    maxW="80%"
-                                    whiteSpace="pre-wrap"
-                                    bg={msg.sender === "Bot" ? "green.100" : "blue.100"}
-                                    alignSelf={msg.sender === "Bot" ? "flex-start" : "flex-end"}
-                                >
-                                    <Text fontSize="xs" color="gray.600" mb={1}>
-                                        {msg.sender}
-                                    </Text>
-                                    {msg.text && <Text color={"black"}>{msg.text}</Text>}
-
-                                    {msg.imageUrl?.startsWith("http") && (
-                                        <Box mt={2}>
-                                            <Image
-                                                src={msg.imageUrl}
-                                                alt="image from bot"
-                                                className="rounded-2x! max-w-[500px]! h-auto!"
-                                            />
-                                        </Box>
-                                    )}
-                                </Box>
-                            ))}
-                        </VStack>
-                    )}
                 </VStack>
                 <Box p={10} height={200}>
                 <VideoPlaylist
@@ -251,48 +157,6 @@ export default function Content({ mode }: ContentProps) {
                 />
                 </Box>
             </Stack>
-                {mode === "class" && (
-                    <Portal>
-                        <Flex
-                            position="fixed"
-                            bottom="20px"
-                            left="50%"
-                            transform="translateX(-50%)"
-                            width="50%"
-                            bg="white"
-                            px={4}
-                            py={3}
-                            boxShadow="md"
-                            align="center"
-                            borderRadius="full"
-                            zIndex={9999}
-                        >
-                            <Textarea
-                                placeholder="Hỏi bất kỳ điều gì"
-                                borderRadius="full"
-                                mr={4}
-                                resize="none"
-                                rows={1}
-                                value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                            />
-                            <IconButton
-                                aria-label="Send message"
-                                borderRadius="full"
-                                onClick={handleSend}
-                            >
-                                <FiSend />
-                            </IconButton>
-                        </Flex>
-                    </Portal>
-                )}
-                {loading && (
-                    <VStack mb={32}>
-                        <Spinner />
-                        <Text >Loading...</Text>
-                    </VStack>
-                )}
             </Box>
             <FeatureCards />
         </>
