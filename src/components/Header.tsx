@@ -5,7 +5,7 @@ import { isLogin, removeItemLocalStorage, setItemLocalStorage } from "@/lib/help
 import { removeAuthCookies, setAuthCookies } from "@/lib/helper/token";
 import { loginFields, loginSchema } from "@/schema/loginForm";
 import { useUserMe } from "@/services/hooks/hookAuth";
-import { Box, Button, CloseButton, Dialog, Flex, Portal } from "@chakra-ui/react";
+import { Box, Button, CloseButton, Dialog, Flex, HStack, Link, Portal, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -128,6 +128,7 @@ export default function Header() {
       console.error("Logout error:", err);
     } finally {
       setIsLoading(false);
+      setIsAuthenticated(false)
     }
   };
 
@@ -137,45 +138,70 @@ export default function Header() {
   
 
   return (
-    <Dialog.Root placement="center" motionPreset="slide-in-bottom">
+    <Dialog.Root>
+      {/* Header bar */}
       <Box
         as="header"
         px={6}
+        py={2}
+        boxShadow="sm"
         position="sticky"
         top="0"
-        zIndex="10"
         className="w-full bg-transparent"
+        zIndex="10"
       >
         <Flex align="center" justify="space-between">
-          <Flex
-            align="center"
-            justify="center"
-            width="150px"
-            height="100px"
-            overflow="hidden"
-          >
+          {/* Logo */}
+          <Link href="/chat" h="80px" overflow={"hidden"}>
             <Image
-              src="/Logo3.png"
-              alt="Logo Bác sĩ AI"
+              src="/logo2.png"
+              alt="Logo"
               width={150}
-              height={150}
-              style={{ filter: "brightness(0) invert(1)" }}
+              height={80}
+              style={{ backgroundColor: "transparent" }}
             />
-          </Flex>
+          </Link>
 
+          {/* Nav links */}
+          <HStack as="nav" gap={8} >
+            <Link href="/chat">
+              <Text cursor="pointer" fontSize="md" color={"white"} fontWeight="700">
+                Trang chủ
+              </Text>
+            </Link>
+            <Link href="/about" >
+              <Text cursor="pointer" fontSize="md" color={"white"} fontWeight="700">
+                Về chúng tôi
+              </Text>
+            </Link>
+            <Link href="/faq" >
+              <Text cursor="pointer" fontSize="md" color={"white"} fontWeight="700">
+                Hỏi đáp
+              </Text>
+            </Link>
+          {/* Nút CTA bên phải */}
           {isAuthenticated ? (
-            <Button fontSize="lg" onClick={handleLogout} loading={isLoading}>
+            <Button
+              size="sm"
+              color="white" bg={"red.600"}
+              onClick={handleLogout}
+              loading={isLoading}
+            >
               Logout
             </Button>
           ) : (
             <Dialog.Trigger asChild>
-              <Button fontSize="lg">Login</Button>
+              <Button size="sm" color="white" bg={"blue.600"}>
+                Dành cho Bác sĩ
+              </Button>
             </Dialog.Trigger>
           )}
+          </HStack>
+
         </Flex>
       </Box>
 
-      {/* Nếu user chưa login, dialog Login mới được render */}
+      {/* Dialog Login */}
       {!isAuthenticated && (
         <Portal>
           <Dialog.Backdrop />

@@ -20,7 +20,6 @@ import {
 } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
-import Image from "next/image";
 import Header from "@/components/Header";
 
 export type Message = {
@@ -131,10 +130,20 @@ Ngoài ra, tôi cũng hỗ trợ:
             handleSend();
         }
     };
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current
+        .play()
+        .catch(() => {
+          // Nếu autoplay bị chặn, có thể hiển thị nút Play hoặc xử lý khác
+        });
+    }
+  }, []);
 
     return (
         <>
-            {/* 6. Background toàn màn hình */}
+            {/* 6. Background video toàn màn hình */}
             <Box
                 position="fixed"
                 top="0"
@@ -144,28 +153,39 @@ Ngoài ra, tôi cũng hỗ trợ:
                 zIndex={1}
                 overflow="hidden"
             >
-                <Image
-                    src="/BR2.jpg"
-                    alt="Background"
-                    fill
-                    style={{ objectFit: "cover", objectPosition: "top" }}
+                <video
+                    ref={videoRef}
+                    src="/hero_1.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: "center",
+                    }}
                 />
             </Box>
+
+            {/* 7. Overlay màu đen trong suốt để làm mờ video */}
             <Box
                 position="fixed"
                 top="0"
                 left="0"
                 w="100vw"
                 h="100vh"
-                bg="rgba(0, 0, 0, 0.5)"
+                bg="rgba(0, 0, 0, 0.0)"
                 zIndex={2}
             />
-            {/* 7. Layer giao diện chat lên trên */}
+
+            {/* 8. Layer giao diện chat lên trên */}
             <Box position="fixed" top="0" left="0" w="100vw" h="100vh" zIndex={3}>
                 <VStack className="w-full">
                     <Header />
 
-                    {/* 7.1. Danh sách tin nhắn */}
+                    {/* 8.1. Danh sách tin nhắn */}
                     <VStack
                         gap={3}
                         align="stretch"
@@ -198,7 +218,6 @@ Ngoài ra, tôi cũng hỗ trợ:
                         <Box ref={bottomRef} />
                     </VStack>
 
-                    {/* 7.2. Chat input bar (luôn nằm ở góc dưới) */}
                     <Portal>
                         <Flex
                             position="fixed"
@@ -235,7 +254,7 @@ Ngoài ra, tôi cũng hỗ trợ:
                         </Flex>
                     </Portal>
 
-                    {/* 7.3. Spinner hiển thị khi loading */}
+                    {/* 8.3. Spinner hiển thị khi loading */}
                     {loading && (
                         <Flex
                             position="fixed"

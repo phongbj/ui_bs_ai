@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, KeyboardEvent, useRef, useEffect } from "react";
+import { useState, KeyboardEvent, useEffect } from "react";
 import {
     Box,
     Flex,
@@ -33,7 +33,6 @@ const API_BASE = 'http://localhost:8000';
 
 export default function Content({ mode }: ContentProps) {
     const videoSources = ["/bongda.mp4", "/traicay.mp4", "/xe.mp4"];
-    const bottomRef = useRef<HTMLDivElement>(null);
     const [inputText, setInputText] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
@@ -90,7 +89,6 @@ export default function Content({ mode }: ContentProps) {
     };
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
         const localId = localStorage.getItem('chat_session_id');
         if (localId) {
             setSessionId(localId);
@@ -103,7 +101,6 @@ export default function Content({ mode }: ContentProps) {
 
     return (
         <>
-            {/* 1. Background image + overlay */}
             <Box
                 position="fixed"
                 top="0"
@@ -113,11 +110,18 @@ export default function Content({ mode }: ContentProps) {
                 zIndex={1}
                 overflow="hidden"
             >
-                <Image
-                    src="/BR2.jpg"
-                    alt="Background"
-                    fill
-                    style={{ objectFit: "cover", objectPosition: "top" }}
+                <video
+                    src="/hero_1.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: "center",
+                    }}
                 />
             </Box>
             <Box
@@ -126,11 +130,10 @@ export default function Content({ mode }: ContentProps) {
                 left="0"
                 w="100vw"
                 h="100vh"
-                bg="rgba(0, 0, 0, 0.5)"
+                bg="rgba(0, 0, 0, 0.0)"
                 zIndex={2}
             />
 
-            {/* 2. Nội dung chính (stacking context zIndex=3) */}
             <Box position="relative" zIndex={3} pl={10} className="w-[75%]" bg="rgba(0, 0, 0, 0.5)">
             <Stack direction="row">
                 <VStack className="text-white" align="start" gap={4}>
@@ -251,7 +254,6 @@ export default function Content({ mode }: ContentProps) {
                                     )}
                                 </Box>
                             ))}
-                            <Box ref={bottomRef} />
                         </VStack>
                     )}
                 </VStack>
@@ -262,9 +264,6 @@ export default function Content({ mode }: ContentProps) {
                 />
                 </Box>
             </Stack>
-
-
-                {/* 3. Chat bar chỉ hiện khi mode === "about" */}
                 {mode === "class" && (
                     <Portal>
                         <Flex
@@ -301,8 +300,6 @@ export default function Content({ mode }: ContentProps) {
                         </Flex>
                     </Portal>
                 )}
-
-                {/* 4. Spinner loading (nếu đang load) */}
                 {loading && (
                     <VStack mb={32}>
                         <Spinner />
@@ -310,8 +307,6 @@ export default function Content({ mode }: ContentProps) {
                     </VStack>
                 )}
             </Box>
-
-            {/* 5. FeatureCards render ở dưới cùng (không ảnh hưởng tới chat bar) */}
             <FeatureCards />
         </>
     );

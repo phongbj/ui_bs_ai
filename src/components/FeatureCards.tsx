@@ -11,7 +11,7 @@ import {
   VStack,
   CloseButton
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -45,7 +45,6 @@ type SegmentResponse = {
 type ApiResponse = ClassificationResponse | DetectResponse | SegmentResponse;
 
 export default function FeatureCards() {
-  const bottomRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const cards = [
@@ -68,10 +67,6 @@ export default function FeatureCards() {
       img: "/segementation.jpg"
     },
   ];
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [expanded]);
 
   // 1. Lưu DataURL để hiển thị preview
   const [previewURL, setPreviewURL] = useState<string | null>(null);
@@ -472,7 +467,6 @@ export default function FeatureCards() {
           </Box>
         );
       })}
-      <Box ref={bottomRef} />
     </Flex>
   );
 }
