@@ -192,6 +192,7 @@ export default function FeatureCards() {
         const isOpen = expanded === card.mode;
         return (
           <Box
+          color={"black"}
             key={card.mode}
             bg="whiteAlpha.800"
             borderRadius="xl"
@@ -251,7 +252,7 @@ export default function FeatureCards() {
               onClick={(e) => e.stopPropagation()}
             >
               <Box p={6}>
-                <Flex gap={6} flexDir={{ base: "column", md: "row" }}>
+                <Flex gap={6} flexDir={{ base: "column", md: "row" }} >
                   {/* --------- BÊN TRÁI: UPLOAD / PREVIEW IMAGE --------- */}
                   <Box
                     flex="1"
