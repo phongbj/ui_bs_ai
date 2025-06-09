@@ -9,6 +9,7 @@ import React, {
   ReactElement,
 } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Box,
   VStack,
@@ -18,12 +19,15 @@ import {
   Spinner,
   Flex,
   Portal,
-  Stack,
   Heading,
+  Button,
+  Dialog,
 } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/Header";
+import { isLogin } from "@/lib/helper";
+import LoginModal from "@/components/LoginModal";
 
 export type Message = {
   text: string;
@@ -41,11 +45,11 @@ export default function Chat(): ReactElement {
       text: `Xin chào! Tôi có thể giúp gì cho bạn!`,
     },
   ]);
-
+  const router = useRouter();
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState("");
-
+  const [isAuthenticated] = useState(isLogin());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // 2. Khởi tạo session_id hoặc load từ localStorage
@@ -76,7 +80,6 @@ export default function Chat(): ReactElement {
       setSessionId(generated);
     }
   }, [messages]);
-
   // 4. Gửi tin nhắn
   const handleSend = async () => {
     const trimmed = inputText.trim();
@@ -177,76 +180,94 @@ export default function Chat(): ReactElement {
         w="100%"
         zIndex={3}
         position="relative"
-        overflow="hidden"
+        overflow="auto"
       >
         <Header />
 
         {/* 8.0. Giới thiệu sản phẩm */}
-        <Box
-          as="section"
-          w={["90%", "80%", "60%"]}
-          bg="whiteAlpha.800"
-          borderRadius="lg"
-          boxShadow="md"
-          my={4}
-          p={6}
-          mx="auto"
-          flexShrink={0}
+<Box
+  as="section"
+  w={["90%", "80%", "60%"]}
+  bg="whiteAlpha.800"
+  borderRadius="lg"
+  boxShadow="md"
+  my={4}
+  p={6}
+  mx="auto"
+>
+  <Box
+    float="right"
+    ml={4}
+    mb={4}
+    maxW="40%"      // tối đa 40% độ rộng để text còn chừa chỗ
+    display="block"
+  >
+    <Image
+      src="/Ai-trong-y-te.webp"
+      alt="Healthcare AI"
+      width={500}
+      height={200}
+      style={{ borderRadius: 8, width: "100%", height: "auto" }}
+    />
+  </Box>
+
+  <Heading size="md" mb={2}>
+    Chatbox Hỏi Đáp & Chẩn Đoán Hình Ảnh Y Tế Bằng AI
+  </Heading>
+
+  <Text fontSize="sm" mb={2}>
+    Trang web Chatbox Hỏi Đáp Về Bệnh và Chẩn Đoán Hình Ảnh Y Tế
+    Bằng AI là giải pháp toàn diện giúp người dùng tiếp cận thông
+    tin y tế nhanh chóng và chính xác, trước khi đến gặp bác sĩ.
+  </Text>
+
+  <Text fontSize="sm" mb={2}>
+    <strong>Hỗ Trợ Hỏi Đáp Về Bệnh:</strong> Chatbox AI giải đáp thắc
+    mắc sức khỏe tức thì, không phải chờ đợi.
+  </Text>
+
+  <Text fontSize="sm" mb={2}>
+    <strong>Tư Vấn Sức Khỏe Cơ Bản:</strong> Cung cấp dấu hiệu bệnh,
+    cách phòng tránh và điều trị cơ bản (cảm cúm, đau đầu, dị ứng…).
+  </Text>
+
+  <Text fontSize="sm" mb={2}>
+    <strong>Đánh Giá Triệu Chứng:</strong> Hỏi chi tiết triệu chứng,
+    tiền sử, giúp người dùng có cái nhìn tổng quan.
+  </Text>
+
+  <Text fontSize="sm" mb={4}>
+    <strong>Chẩn Đoán Hình Ảnh Y Tế:</strong> Phân loại X-quang, MRI,
+    CT scan; phát hiện khối u, tổn thương; khoanh vùng chi tiết bằng AI.
+  </Text>
+
+  <Box textAlign="start" mt={4}>
+  {isAuthenticated ? (
+    <Button
+      bg="orange.500"
+      color="white"
+      _hover={{ bg: "orange.600" }}
+      onClick={() => router.push("/")}
+    >
+      Sử dụng chức năng phân tích hình ảnh
+    </Button>
+  ) : (
+    // Chưa đăng nhập: mở modal
+    <LoginModal onLoginSuccess={() => router.push("/")}>
+      <Dialog.Trigger asChild>
+        <Button
+          bg="orange.500"
+          color="white"
+          _hover={{ bg: "orange.600" }}
         >
-          <Flex
-            direction={["column", "row"]}
-            align="center"
-            justify="space-between"
-            gap={6}
-          >
-            {/* Ảnh minh hoạ */}
-            <Box flexShrink={0}>
-              <Image
-                src="/Ai-trong-y-te.webp"
-                alt="Healthcare AI"
-                width={300}
-                height={200}
-                style={{ borderRadius: "8px" }}
-              />
-            </Box>
+          Sử dụng chức năng phân tích hình ảnh
+        </Button>
+      </Dialog.Trigger>
+    </LoginModal>
+  )}
+</Box>
+</Box>
 
-            {/* Nội dung */}
-            <Stack gap={4} flex="1">
-              <Heading size="md">
-                Chatbox Hỏi Đáp & Chẩn Đoán Hình Ảnh Y Tế Bằng AI
-              </Heading>
-              <Text fontSize="sm">
-                Trang web Chatbox Hỏi Đáp Về Bệnh và Chẩn Đoán Hình Ảnh Y Tế
-                Bằng AI là giải pháp toàn diện giúp người dùng tiếp cận thông
-                tin y tế nhanh chóng và chính xác, trước khi đến gặp bác sĩ.
-              </Text>
-
-              <Heading size="sm">Hỗ Trợ Hỏi Đáp Về Bệnh</Heading>
-              <Text fontSize="sm">
-                Chatbox AI giải đáp thắc mắc sức khỏe tức thì, không phải chờ
-                đợi.
-              </Text>
-
-              <Heading size="sm">Tư Vấn Sức Khỏe Cơ Bản</Heading>
-              <Text fontSize="sm">
-                Cung cấp dấu hiệu bệnh, cách phòng tránh và điều trị cơ bản (cảm
-                cúm, đau đầu, dị ứng…).
-              </Text>
-
-              <Heading size="sm">Đánh Giá Triệu Chứng</Heading>
-              <Text fontSize="sm">
-                Hỏi chi tiết triệu chứng, tiền sử, giúp người dùng có cái nhìn
-                tổng quan.
-              </Text>
-
-              <Heading size="sm">Chẩn Đoán Hình Ảnh Y Tế</Heading>
-              <Text fontSize="sm">
-                Phân loại X-quang, MRI, CT scan; phát hiện khối u, tổn thương;
-                khoanh vùng chi tiết bằng AI.
-              </Text>
-            </Stack>
-          </Flex>
-        </Box>
 
         <Flex
           direction="column"
@@ -276,7 +297,7 @@ export default function Chat(): ReactElement {
                 p={3}
                 borderRadius="md"
                 maxW="80%"
-                bg={msg.sender === "Bot" ? "gray.100" : "blue.100"}
+                bg={msg.sender === "Bot" ? "whiteAlpha.800" : "blue.100"}
                 alignSelf={msg.sender === "Bot" ? "flex-start" : "flex-end"}
               >
                 <Text fontSize="xs" color="#000000" mb={1}>

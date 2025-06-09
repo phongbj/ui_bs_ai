@@ -14,7 +14,7 @@ export default function RootLayout({
 }) { 
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className="font-pretendard">
+      <body >
         <Providers>{children}</Providers>
       </body>
     </html>
