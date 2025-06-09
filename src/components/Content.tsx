@@ -139,43 +139,30 @@ export default function Content({ mode }: ContentProps) {
                 <VStack className="text-white" align="start" gap={4}>
                     {mode === "about" && (
                         <>
-                            <Heading size={"3xl"}>Introduction to YOLOv8</Heading>
+                            <Heading size={"3xl"}>Introduction to </Heading>
                             <Text>
                                 🚀 Welcome to the introduction page of our project! In this project,
-                                we will be exploring the YOLO (You Only Look Once) algorithm. YOLO is
-                                known for its ability to detect objects in an image in a single pass,
-                                making it a highly efficient and accurate object detection algorithm. 🎯
+                                
                             </Text>
 
                             <Text>
-                                The latest version of YOLO, YOLOv8, released in January 2023 by
-                                Ultralytics, has introduced several modifications that have further
-                                improved its performance. 🌟
+                                 🌟
                             </Text>
 
                             <Text>
-                                🔍 Some of these modifications are:
-                                <br />• Introducing a new backbone network, Darknet-53,
-                                <br />• Introducing a new anchor-free detection head...
-                                <br />• and a new loss function.
+                                🔍 
                             </Text>
 
                             <Text>
-                                🦄 One of the key advantages of YOLOv8 is its versatility. It not only
-                                supports object detection but also offers classification and
-                                segmentation. This makes it a powerful tool for various computer vision
-                                applications.
+                                🦄 
                             </Text>
 
                             <Text>
-                                ✨ We will focus on three tasks: <b>classification</b>,{" "}
-                                <b>detection</b>, and <b>segmentation</b>. We’ll explore medical
-                                imaging to detect and classify anomalies 💉🍷.
+                                ✨
                             </Text>
 
                             <Text>
-                                We hope you find this inspiring. 💡 Let’s dive into the world of
-                                YOLOv8! 😈🟪
+                               
                             </Text>
                         </>
                     )}
