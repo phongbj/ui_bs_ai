@@ -200,7 +200,7 @@ export default function FeatureCards() {
                 ? isOpen
                   ? "max-w-full"
                   : "md:max-w-[49.15%] max-w-[100%]"
-                : "md:max-w-[32.2%] max-w-[100%]"
+                : "md:max-w-[31.8%] max-w-[100%]"
               }`}
             w="full"
             transition="all 0.5s ease"

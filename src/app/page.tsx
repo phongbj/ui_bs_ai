@@ -13,7 +13,7 @@ export default function HomePage() {
     <Flex minH="100vh">
       <VStack className="w-full">
       <Header />
-      <Content mode={"about"} />
+      <Content />
       </VStack>
     </Flex>
   );

@@ -54,7 +54,7 @@ export default function Header() {
       position="sticky"
       w={"full"}
       top="0"
-      zIndex="10"
+      zIndex="3"
     >
       <Flex align="center" justify="space-between">
         <Link href="/chat" h="80px" overflow="hidden">
