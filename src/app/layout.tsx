@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
+import { PageTransition } from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: "Bác sĩ AI",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body >
-        <Providers>{children}</Providers>
+        <Providers> <PageTransition>{children}</PageTransition></Providers>
       </body>
     </html>
   );

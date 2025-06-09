@@ -1,22 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
+  Dialog,
   Flex,
   HStack,
-  Link,
-  Text,
-  Dialog,
+  Link
 } from "@chakra-ui/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
+import { USER_NAME } from "@/config/const";
 import { isLogin, removeItemLocalStorage } from "@/lib/helper";
 import { removeAuthCookies } from "@/lib/helper/token";
-import { USER_NAME } from "@/config/const";
 import LoginModal from "./LoginModal";
+import { NavLink } from "./NavLink";
 
 export default function Header() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -54,28 +54,16 @@ export default function Header() {
       position="sticky"
       w={"full"}
       top="0"
-      zIndex="3"
+      zIndex={5}
     >
       <Flex align="center" justify="space-between">
         <Link href="/chat" h="80px" overflow="hidden">
           <Image src="/logo2.png" alt="Logo" width={120} height={50} />
         </Link>
         <HStack gap={8}>
-          <Link href="/chat">
-            <Text fontSize="md" color="white" fontWeight="700">
-              Trang chủ
-            </Text>
-          </Link>
-          <Link href="/about">
-            <Text fontSize="md" color="white" fontWeight="700">
-              Về chúng tôi
-            </Text>
-          </Link>
-          <Link href="/faq">
-            <Text fontSize="md" color="white" fontWeight="700">
-              Hỏi đáp
-            </Text>
-          </Link>
+          <NavLink href="/chat">Trang chủ</NavLink>
+          <NavLink href="/about">Về chúng tôi</NavLink>
+          <NavLink href="/faq">Hỏi đáp</NavLink>
 
           {isLogin() ? (
             <Button
@@ -88,9 +76,9 @@ export default function Header() {
               Logout
             </Button>
           ) : (
-            <LoginModal onLoginSuccess={() => {}}>
+            <LoginModal onLoginSuccess={() => { }}>
               <Dialog.Trigger asChild>
-                <Button size="sm" color="white" bg="blue.600">
+                <Button size="sm" color="white" bg="blue.600" _hover={{ bg: "blue.400" }}>
                   Dành cho Bác sĩ
                 </Button>
               </Dialog.Trigger>

@@ -28,6 +28,7 @@ import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/Header";
 import { isLogin } from "@/lib/helper";
 import LoginModal from "@/components/LoginModal";
+import { useColorModeValue } from "@/components/ui/color-mode";
 
 export type Message = {
     text: string;
@@ -110,7 +111,8 @@ export default function Chat(): ReactElement {
             handleSend();
         }
     };
-
+    //const backdropStyle = "rgba(10, 10, 10, 0.8)"
+    const contentBg = useColorModeValue("rgba(250, 250, 250, 0.1)", "rgba(0, 0, 0, 0.8)");
     return (
         <>
             {/* Background video */}
@@ -218,9 +220,9 @@ export default function Chat(): ReactElement {
                     <Box textAlign="start" mt={4}>
                         {isLogin() ? (
                             <Button
-                                bg="orange.500"
+                                backgroundColor={"orange.600"}
                                 color="white"
-                                _hover={{ bg: "orange.600" }}
+                                _hover={{ bg: "blue.400" }}
                                 onClick={() => router.push("/")}
                             >
                                 Sử dụng chức năng phân tích hình ảnh
@@ -230,9 +232,9 @@ export default function Chat(): ReactElement {
                             <LoginModal onLoginSuccess={() => router.push("/")}>
                                 <Dialog.Trigger asChild>
                                     <Button
-                                        bg="orange.500"
+                                        backgroundColor={"orange.600"}
                                         color="white"
-                                        _hover={{ bg: "orange.600" }}
+                                        _hover={{ bg: "blue.400" }}
                                     >
                                         Sử dụng chức năng phân tích hình ảnh
                                     </Button>
@@ -286,18 +288,18 @@ export default function Chat(): ReactElement {
                     {/* 8.2. Input & Send */}
                     <Portal>
                         <Flex
+                            backgroundColor={contentBg}
                             position="fixed"
                             bottom="20px"
                             left="50%"
                             transform="translateX(-50%)"
                             w={["95%", "80%", "60%"]}
-                            bg="white"
                             px={4}
                             py={3}
                             boxShadow="lg"
                             align="center"
                             borderRadius="full"
-                            zIndex={9999}
+                            zIndex={4}
                         >
                             <Textarea
                                 placeholder="Hỏi bất kỳ điều gì"
@@ -305,6 +307,7 @@ export default function Chat(): ReactElement {
                                 mr={4}
                                 resize="none"
                                 rows={1}
+                                className="text-white!"
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
                                 onKeyDown={handleKeyDown}

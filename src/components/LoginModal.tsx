@@ -8,6 +8,7 @@ import {
   Dialog,
   Portal,
   CloseButton,
+  Box,
 } from "@chakra-ui/react";
 import { loginSchema, loginFields } from "@/schema/loginForm";
 import { FormBase } from "./common/FormBase";
@@ -16,12 +17,13 @@ import { setAuthCookies } from "@/lib/helper/token";
 import { setItemLocalStorage } from "@/lib/helper";
 import { USER_NAME } from "@/config/const";
 import { toaster } from "./ui/toaster";
+import { useColorModeValue } from "./ui/color-mode";
 
 export type LoginFormType = TypeOf<typeof loginSchema>;
 
 interface LoginModalProps {
   onLoginSuccess?: () => void;
-  children: ReactNode;  // đây sẽ là Trigger (button) do Header truyền vào
+  children: ReactNode;  // Trigger element (button) passed in
 }
 
 export default function LoginModal({ onLoginSuccess, children }: LoginModalProps) {
@@ -79,17 +81,47 @@ export default function LoginModal({ onLoginSuccess, children }: LoginModalProps
     }
   };
 
+  // Semi-transparent backdrop color
+  
+  const backdropStyle = { backgroundColor: "rgba(0, 0, 0, 0.5)" };
+  // Modal content background
+  const contentBg = useColorModeValue("rgba(255, 255, 255, 0.4)", "rgba(0, 0, 0, 0.8)");
+
   return (
-    <Dialog.Root>
+    <Dialog.Root placement={"center"}>
       {children}
 
       <Portal>
-        <Dialog.Backdrop />
+        <Dialog.Backdrop style={backdropStyle} />
         <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Đăng nhập</Dialog.Title>
-            </Dialog.Header>
+          <Dialog.Content
+            style={{
+              background: contentBg,
+              backdropFilter: "blur(10px)",
+              borderRadius: "12px",
+              paddingBottom: "24px",
+              paddingLeft: "24px",
+              paddingRight: "24px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+              maxWidth: "400px",
+              width: "90%",
+            }}
+          >
+            <Box position="relative">
+              <Dialog.Header>
+                <Dialog.Title>Đăng nhập</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton
+                  size="sm"
+                  position="absolute"
+                  top="0px"
+                  right="-24px"
+                  className="hover:bg-[#FFFFFFC4]! rounded-xl!"
+                />
+              </Dialog.CloseTrigger>
+            </Box>
+
             <Dialog.Body>
               <FormBase
                 schema={loginSchema}
@@ -97,18 +129,10 @@ export default function LoginModal({ onLoginSuccess, children }: LoginModalProps
                 onSubmit={handleLogin}
                 columns={1}
                 isSubmitting={isLoading}
-                submitButtonText="Login"
+                submitButtonText="Đăng Nhập"
                 formMethodsRef={formMethodsRef}
               />
             </Dialog.Body>
-            <Dialog.CloseTrigger asChild>
-              <CloseButton
-                size="sm"
-                position="absolute"
-                top="8px"
-                right="8px"
-              />
-            </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>
       </Portal>

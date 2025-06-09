@@ -25,14 +25,14 @@ export const loginFields: FieldConfig<"user_ident" | "password">[] = [
   {
     type: "text",
     name: "user_ident",
-    label: "E-mail",
+    label: "Tài khoản",
     placeholder: "이메일을 입력해 주세요.",
     icon: "LuMail",
   },
   {
     type: "password",
     name: "password",
-    label: "Password",
+    label: "Mật khẩu",
     placeholder: "비밀번호를 입력해 주세요.",
     icon: "LuLock",
   },
