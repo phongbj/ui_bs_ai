@@ -14,7 +14,7 @@ export default function RootLayout({
 }) { 
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body >
+      <body className="custom-scroll">
         <Providers>{children}</Providers>
       </body>
     </html>

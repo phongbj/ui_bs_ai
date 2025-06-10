@@ -9,7 +9,6 @@ import React, {
     ReactElement,
 } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
     Box,
     VStack,
@@ -20,14 +19,10 @@ import {
     Flex,
     Portal,
     Heading,
-    Button,
-    Dialog,
 } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/Header";
-import { isLogin } from "@/lib/helper";
-import LoginModal from "@/components/LoginModal";
 import { useColorModeValue } from "@/components/ui/color-mode";
 
 export type Message = {
@@ -39,37 +34,31 @@ export type Message = {
 const API_BASE = "http://localhost:8000";
 
 export default function Chat(): ReactElement {
-    // 1. Khởi tạo ngay một tin nhắn giới thiệu từ Bot
     const [messages, setMessages] = useState<Message[]>([
         {
             sender: "Bot",
             text: `Xin chào! Tôi có thể giúp gì cho bạn!`,
         },
     ]);
-    const router = useRouter();
     const [inputText, setInputText] = useState("");
     const [loading, setLoading] = useState(false);
     const [sessionId, setSessionId] = useState("");
     const bottomRef = useRef<HTMLDivElement>(null);
 
-    // 2. Khởi tạo session_id hoặc load từ localStorage
     useEffect(() => {
         const generated = uuidv4();
         localStorage.setItem("chat_session_id", generated);
         setSessionId(generated);
-
     }, []);
 
-    // 3. Tự động scroll xuống khi có tin nhắn mới
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
-    // 4. Gửi tin nhắn
+
     const handleSend = async () => {
         const trimmed = inputText.trim();
         if (!trimmed) return;
 
-        // Thêm tin nhắn người dùng vào danh sách
         setMessages((prev) => [...prev, { text: trimmed, sender: "user" }]);
         setInputText("");
         setLoading(true);
@@ -91,7 +80,6 @@ export default function Chat(): ReactElement {
             }
 
             const data = await res.json();
-            // Thêm phản hồi từ Bot
             setMessages((prev) => [...prev, { text: data.response, sender: "Bot" }]);
         } catch (error) {
             console.error("❌ Error sending message:", error);
@@ -104,14 +92,13 @@ export default function Chat(): ReactElement {
         setLoading(false);
     };
 
-    // 5. Bắt phím Enter để gửi
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSend();
         }
     };
-    //const backdropStyle = "rgba(10, 10, 10, 0.8)"
+
     const contentBg = useColorModeValue("rgba(250, 250, 250, 0.1)", "rgba(0, 0, 0, 0.8)");
     return (
         <>
@@ -156,11 +143,11 @@ export default function Chat(): ReactElement {
                 w="100%"
                 zIndex={3}
                 position="relative"
-                overflow="auto"
+                overflow="auto"  // allow full page scroll
             >
                 <Header />
 
-                {/* 8.0. Giới thiệu sản phẩm */}
+                {/* Introduction */}
                 <Box
                     as="section"
                     w={["90%", "80%", "60%"]}
@@ -187,70 +174,28 @@ export default function Chat(): ReactElement {
                         />
                     </Box>
 
-                    <Heading size="md" mb={2}>
-                        Chatbox Hỏi Đáp & Chẩn Đoán Hình Ảnh Y Tế Bằng AI
+                    <Heading size="xl" mb={2}>
+                        AI bác sĩ tư vấn về sức khỏe
                     </Heading>
 
                     <Text fontSize="sm" mb={2}>
-                        Trang web Chatbox Hỏi Đáp Về Bệnh và Chẩn Đoán Hình Ảnh Y Tế
-                        Bằng AI là giải pháp toàn diện giúp người dùng tiếp cận thông
-                        tin y tế nhanh chóng và chính xác, trước khi đến gặp bác sĩ.
+                        AI Bác Sĩ - Tư Vấn Sức Khỏe Toàn Diện 24/7
+                        Bạn cần lời khuyên y tế nhanh chóng, chính xác và dễ hiểu ngay tại nhà? AI Bác Sĩ chính là giải pháp:
                     </Text>
-
-                    <Text fontSize="sm" mb={2}>
-                        <strong>Hỗ Trợ Hỏi Đáp Về Bệnh:</strong> Chatbox AI giải đáp thắc
-                        mắc sức khỏe tức thì, không phải chờ đợi.
-                    </Text>
-
-                    <Text fontSize="sm" mb={2}>
-                        <strong>Tư Vấn Sức Khỏe Cơ Bản:</strong> Cung cấp dấu hiệu bệnh,
-                        cách phòng tránh và điều trị cơ bản (cảm cúm, đau đầu, dị ứng…).
-                    </Text>
-
-                    <Text fontSize="sm" mb={2}>
-                        <strong>Đánh Giá Triệu Chứng:</strong> Hỏi chi tiết triệu chứng,
-                        tiền sử, giúp người dùng có cái nhìn tổng quan.
-                    </Text>
-
-                    <Text fontSize="sm" mb={4}>
-                        <strong>Chẩn Đoán Hình Ảnh Y Tế:</strong> Phân loại X-quang, MRI,
-                        CT scan; phát hiện khối u, tổn thương; khoanh vùng chi tiết bằng AI.
-                    </Text>
-
-                    <Box textAlign="start" mt={4}>
-                        {isLogin() ? (
-                            <Button
-                                backgroundColor={"orange.600"}
-                                color="white"
-                                _hover={{ bg: "blue.400" }}
-                                onClick={() => router.push("/")}
-                            >
-                                Sử dụng chức năng phân tích hình ảnh
-                            </Button>
-                        ) : (
-                            // Chưa đăng nhập: mở modal
-                            <LoginModal onLoginSuccess={() => router.push("/")}>
-                                <Dialog.Trigger asChild>
-                                    <Button
-                                        backgroundColor={"orange.600"}
-                                        color="white"
-                                        _hover={{ bg: "blue.400" }}
-                                    >
-                                        Sử dụng chức năng phân tích hình ảnh
-                                    </Button>
-                                </Dialog.Trigger>
-                            </LoginModal>
-                        )}
-                    </Box>
+                    <ul>
+                        <li>Giải Đáp Mọi Thắc Mắc Về Sức Khỏe</li>
+                        <li>Đánh Giá Triệu Chứng Cá Nhân</li>
+                        <li>Tư Vấn Phòng Ngừa và Chế Độ Sinh Hoạt</li>
+                        <li>Nhắc Nhở và Theo Dõi Sức Khỏe</li>
+                        <li>Hướng Dẫn Xử Lý Ban Đầu Khẩn Cấp</li>
+                    </ul>
                 </Box>
-
 
                 <Flex
                     direction="column"
                     w={["90%", "80%", "60%"]}
                     mx="auto"
                     flex="1"
-                    overflow="hidden"
                     position="relative"
                     pb="100px"
                 >
@@ -263,9 +208,6 @@ export default function Chat(): ReactElement {
                         bg="whiteAlpha.400"
                         boxShadow="md"
                         className="custom-scroll"
-                        maxH={messages.length <= 1 ? "120px" : undefined}
-                        flex={messages.length > 1 ? "1" : undefined}
-                        transition="all 0.3s ease"
                     >
                         {messages.map((msg, idx) => (
                             <Box
@@ -285,7 +227,7 @@ export default function Chat(): ReactElement {
                         <Box ref={bottomRef} />
                     </VStack>
 
-                    {/* 8.2. Input & Send */}
+                    {/* Input & Send */}
                     <Portal>
                         <Flex
                             backgroundColor={contentBg}
@@ -324,7 +266,6 @@ export default function Chat(): ReactElement {
                     </Portal>
                 </Flex>
 
-                {/* 8.3. Spinner khi loading */}
                 {loading && (
                     <Flex
                         position="fixed"

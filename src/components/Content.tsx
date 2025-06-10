@@ -14,7 +14,6 @@ import FeatureCards from "./FeatureCards";
 import VideoPlaylist from "./VideoPlaylist";
 
 export default function Content() {
-  const videoSources = ["/bongda.mp4", "/traicay.mp4", "/xe.mp4"];
   const colCount = useBreakpointValue({ base: 1, md: 1, lg: 2 });
 
   return (
@@ -26,6 +25,7 @@ export default function Content() {
         w="100vw"
         h="100vh"
         zIndex={1}
+        className="custom-scroll"
         overflow="hidden"
       >
         <video
@@ -107,7 +107,7 @@ export default function Content() {
             </VStack>
 
             <Box flex="1">
-              <VideoPlaylist sources={videoSources} width="100%" />
+              <VideoPlaylist sources={"/13808077-hd_1920_1080_25fps.mp4"} width="100%" loop={true} />
             </Box>
           </Flex>
         </VStack>

@@ -15,10 +15,10 @@ export function NavLink({ href, children }: NavLinkProps) {
         _after={{
           content: '""',
           position: "absolute",
-          bottom: "-2px",     // cách text 2px
+          bottom: "-2px",
           left: 0,
           width: "0%",
-          height: "2px",      // độ dày underline
+          height: "2px",
           bg: "blue.600",
           transition: "width 0.3s ease",
         }}

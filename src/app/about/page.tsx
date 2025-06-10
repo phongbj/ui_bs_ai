@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
+import VideoPlaylist from "@/components/VideoPlaylist";
 import {
   Box,
   Container,
@@ -9,11 +10,10 @@ import {
   VStack,
   SimpleGrid,
 } from "@chakra-ui/react";
-import Image from "next/image";
 
 export default function About() {
-  // you can swap this for whatever image you like
-  const imageSrc = "/img-about-us.webp";
+
+  const videoSources = ["/us1.mp4", "/us2.mp4", "/us3.mp4"];
 
   return (
     <>
@@ -126,16 +126,10 @@ export default function About() {
             {/* Right: Image */}
             <Box
               position="relative"
-              borderRadius="2xl"
               overflow="hidden"
               boxShadow="lg"
             >
-              <Image
-                src={imageSrc}
-                alt="Đội ngũ AI Bác Sĩ"
-                fill
-                objectFit="cover"
-              />
+              <VideoPlaylist sources={videoSources} width="100%" />
             </Box>
           </SimpleGrid>
         </Container>

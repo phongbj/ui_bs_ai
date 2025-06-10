@@ -7,13 +7,15 @@ interface VideoPlaylistProps {
   // sources có thể là 1 string hoặc 1 mảng string
   sources: string | string[];
   width?: string | number;  // ví dụ "100%" hoặc 320
-  height?: string | number; // ví dụ "auto" hoặc một giá trị cụ thể
+  height?: string | number;
+  loop?: boolean
 }
 
 export default function VideoPlaylist({
   sources,
   width = "100%",
   height = "auto",
+  loop = false
 }: VideoPlaylistProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,6 +46,7 @@ export default function VideoPlaylist({
         width="100%"
         height="100%"
         muted
+        loop = {loop}
         autoPlay
         onEnded={handleEnded}
         style={{ objectFit: "cover" }}

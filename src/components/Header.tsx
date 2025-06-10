@@ -50,7 +50,6 @@ export default function Header() {
       as="header"
       px={6}
       py={2}
-      boxShadow="sm"
       position="sticky"
       w={"full"}
       top="0"
@@ -66,15 +65,22 @@ export default function Header() {
           <NavLink href="/faq">Hỏi đáp</NavLink>
 
           {isLogin() ? (
-            <Button
-              size="sm"
-              color="white"
-              bg="red.600"
-              onClick={handleLogout}
-              loading={isLoggingOut}
-            >
-              Logout
-            </Button>
+            <>
+            <Link href="/">
+              <Button size="sm" color="white" bg="blue.600" _hover={{ bg: "blue.400" }}>
+                Dành cho Bác sĩ
+              </Button>
+            </Link>
+              <Button
+                size="sm"
+                color="white"
+                bg="red.600"
+                onClick={handleLogout}
+                loading={isLoggingOut}
+              >
+                Logout
+              </Button>
+            </>
           ) : (
             <LoginModal onLoginSuccess={() => { }}>
               <Dialog.Trigger asChild>
