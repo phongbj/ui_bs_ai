@@ -13,7 +13,7 @@ import {
   Slider,
   HStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ZoomableImage from "./ZoomableImage";
 
 const BASE_URL = "http://localhost:8000";
@@ -100,11 +100,7 @@ export default function FeatureCards() {
     reader.readAsDataURL(f);
   };
 
-  useEffect(() => {
-    handleSubmit()
-  }, [endValue])
-
-  const handleSubmit = async () => {
+const handleSubmit = useCallback(async () => {
     if (!fileObject || !expanded) return;
 
     const endpoint =
@@ -183,7 +179,8 @@ export default function FeatureCards() {
       setApiResponse(null);
       alert("Có lỗi khi gọi API: " + (err as Error).message);
     }
-  };
+}, [endValue, expanded, fileObject]);
+
 
   return (
     <Flex

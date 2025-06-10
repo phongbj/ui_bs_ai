@@ -1,7 +1,7 @@
 // components/VideoPlaylist.tsx
 
 import { Box } from "@chakra-ui/react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 
 interface VideoPlaylistProps {
   // sources có thể là 1 string hoặc 1 mảng string
@@ -20,12 +20,13 @@ export default function VideoPlaylist({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Chuẩn hoá sources thành mảng videoSources
-  const videoSources: string[] = Array.isArray(sources) ? sources : [sources];
+  const videoSources: string[] = useMemo(
+    () => (Array.isArray(sources) ? sources : [sources]),
+    [sources]
+  );
 
   useEffect(() => {
     if (!videoRef.current) return;
-    // Lấy src hiện tại từ mảng videoSources
     videoRef.current.src = videoSources[currentIndex];
     videoRef.current
       .play()
