@@ -16,7 +16,7 @@ export const loginSchema = z
       ctx.addIssue({
         path: ["password"],
         code: z.ZodIssueCode.custom,
-        message: "이메일과 비밀번호를 모두 입력해주세요.",
+        message: "Vui lòng nhập cả tài khoản và mật khẩu.",
       });
     }
   });
@@ -26,14 +26,14 @@ export const loginFields: FieldConfig<"user_ident" | "password">[] = [
     type: "text",
     name: "user_ident",
     label: "Tài khoản",
-    placeholder: "이메일을 입력해 주세요.",
+    placeholder: "Nhập tài khoản.",
     icon: "LuMail",
   },
   {
     type: "password",
     name: "password",
     label: "Mật khẩu",
-    placeholder: "비밀번호를 입력해 주세요.",
+    placeholder: "Nhập mật khẩu.",
     icon: "LuLock",
   },
 ];
