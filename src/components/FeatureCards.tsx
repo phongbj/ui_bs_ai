@@ -10,8 +10,11 @@ import {
   Text,
   VStack,
   CloseButton,
+  Slider,
+  HStack,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ZoomableImage from "./ZoomableImage";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -46,27 +49,29 @@ type ApiResponse = ClassificationResponse | DetectResponse | SegmentResponse;
 
 export default function FeatureCards() {
   const [expanded, setExpanded] = useState<string | null>(null);
-
+  const [value, setValue] = useState([0.35])
+  const [endValue, setEndValue] = useState([0.35])
   const cards = [
     {
-      title: "Classification with YOLOv8",
-      desc: "Phân loại hình ảnh chính xác nhờ sức mạnh của YOLOv8.",
+      title: "Phân Loại Thông Minh",
+      desc: "Nhận diện và phân loại hình ảnh tự động với độ chính xác vượt trội.",
       mode: "class",
       img: "/classification.jpg",
     },
     {
-      title: "Object Detection with YOLOv8",
-      desc: "Phát hiện đối tượng nhanh chóng và chính xác.",
+      title: "Phát Hiện Đối Tượng Chuẩn Xác",
+      desc: "Xác định vị trí và nhận dạng đối tượng tức thì, tối ưu cho mọi tình huống.",
       mode: "detect",
       img: "/detection.jpg",
     },
     {
-      title: "Segmentation with YOLOv8",
-      desc: "Phân vùng ảnh chi tiết, hỗ trợ xử lý ảnh y tế và nhiều lĩnh vực khác.",
+      title: "Phân Vùng Siêu Chi Tiết",
+      desc: "Tách vùng mục tiêu với mức độ chi tiết cao, hỗ trợ phân tích y tế chuyên sâu.",
       mode: "segment",
       img: "/segementation.jpg",
     },
   ];
+
 
   // 1. Lưu DataURL để hiển thị preview
   const [previewURL, setPreviewURL] = useState<string | null>(null);
@@ -95,7 +100,10 @@ export default function FeatureCards() {
     reader.readAsDataURL(f);
   };
 
-  // Khi user bấm “Submit”, gọi đúng endpoint dựa trên `expanded` (mode)
+  useEffect(() => {
+    handleSubmit()
+  }, [endValue])
+
   const handleSubmit = async () => {
     if (!fileObject || !expanded) return;
 
@@ -103,17 +111,20 @@ export default function FeatureCards() {
       expanded === "class"
         ? "/medical/classify"
         : expanded === "detect"
-        ? `/medical/detect?confidence=0.25`
-        : "/medical/segment";
+          ? `/medical/detect?confidence=0.25`
+          : "/medical/segment";
 
     const url = BASE_URL + endpoint;
     const formData = new FormData();
     formData.append("file", fileObject);
-
+    if (expanded === "detect") {
+      formData.append("confidence", endValue.toString());
+    }
     try {
       const resp = await fetch(url, {
         method: "POST",
         body: formData,
+
         // Nếu bạn có JWT auth, thêm header Authorization ở đây, ví dụ:
         // headers: { "Authorization": "Bearer " + yourToken }
       });
@@ -164,7 +175,6 @@ export default function FeatureCards() {
         };
         setApiResponse(result);
       } else {
-        // Unexpected type
         console.error("Unexpected type:", data);
         setApiResponse(null);
       }
@@ -174,14 +184,6 @@ export default function FeatureCards() {
       alert("Có lỗi khi gọi API: " + (err as Error).message);
     }
   };
-
-  // // Sắp xếp card sao cho card đang mở (expanded) lên đầu
-  // const orderedCards = expanded
-  //   ? [
-  //       ...cards.filter((c) => c.mode === expanded),
-  //       ...cards.filter((c) => c.mode !== expanded),
-  //     ]
-  //   : cards;
 
   return (
     <Flex
@@ -221,13 +223,13 @@ export default function FeatureCards() {
                 setApiResponse(null);
               }}
             >
-              <Heading fontSize="lg" className="text-gray-600">
+              <Heading fontSize="lg" className="text-gray-900">
                 {card.title}
               </Heading>
 
               {!expanded && (
                 <>
-                  <Text mb={2}>{card.desc}</Text>
+                  <Text mb={2} className="text-gray-700">{card.desc}</Text>
                   <AspectRatio
                     ratio={4 / 3}
                     w="100%"
@@ -266,7 +268,7 @@ export default function FeatureCards() {
             {cards.find((c) => c.mode === expanded)?.desc}
           </Text>
 
-          <Flex gap={6} flexDir={{ base: "column", md: "row" }}>
+          <Flex gap={6} flexDir={{ base: "column", md: "row" }} className="text-gray-700">
             {/* UPLOAD HÌNH ẢNH */}
             <Box
               flex="1"
@@ -294,14 +296,36 @@ export default function FeatureCards() {
                 overflow="hidden"
               >
                 {previewURL ? (
-                  <ChakraImage
-                    src={previewURL}
-                    alt="Preview"
-                    objectFit="contain"
-                    w="100%"
-                    h="100%"
-                    borderRadius="md"
-                  />
+                  <Box className="flex flex-col">
+                    <ChakraImage
+                      src={previewURL}
+                      alt="Preview"
+                      objectFit="contain"
+                      w="100%"
+                      h="100%"
+                      borderRadius="md"
+                    />
+                    {expanded === "detect" && (
+                      <Box className="px-2!" w={"50%"} position={"absolute"} top={200} right={90} color={"white"}>
+                        <Slider.Root colorPalette="orange" maxW="sm" size="sm" value={value} min={0}
+                          max={1}
+                          step={0.01}
+                          onValueChange={(e) => setValue(e.value)}
+                          onValueChangeEnd={(e) => setEndValue(e.value)}>
+                          <HStack justify="space-between">
+                            <Slider.Label background={"blackAlpha.600"}>Confidence: {(value[0] * 100).toFixed(0)}%</Slider.Label>
+
+                          </HStack>
+                          <Slider.Control>
+                            <Slider.Track>
+                              <Slider.Range />
+                            </Slider.Track>
+                            <Slider.Thumbs rounded="full" />
+                          </Slider.Control>
+                        </Slider.Root>
+                      </Box>
+                    )}
+                  </Box>
                 ) : (
                   <Center h="100%" flexDir="column" gap={2}>
                     <Text color="gray.400">Chưa có ảnh nào được chọn</Text>
@@ -387,14 +411,18 @@ export default function FeatureCards() {
                         <Text fontWeight="bold" mb={1}>
                           Annotated Image:
                         </Text>
-                        <ChakraImage
+                        <ZoomableImage
+                          src={`${BASE_URL}${apiResponse.annotated_image}`}
+                          alt="Mask"
+                        />
+                        {/* <ChakraImage
                           src={`${BASE_URL}${apiResponse.annotated_image}`}
                           alt="Annotated"
                           borderRadius="md"
                           w="100%"
                           maxH="200px"
                           objectFit="contain"
-                        />
+                        /> */}
                       </Box>
                     </VStack>
                   )}
@@ -405,14 +433,18 @@ export default function FeatureCards() {
                         <Text fontWeight="bold" mb={1}>
                           Annotated Image:
                         </Text>
-                        <ChakraImage
+                        <ZoomableImage
+                          src={`${BASE_URL}${apiResponse.annotated_image}`}
+                          alt="Mask"
+                        />
+                        {/* <ChakraImage
                           src={`${BASE_URL}${apiResponse.annotated_image}`}
                           alt="Annotated"
                           borderRadius="md"
                           w="100%"
                           maxH="200px"
                           objectFit="contain"
-                        />
+                        /> */}
                       </Box>
                     </VStack>
                   )}
@@ -436,14 +468,18 @@ export default function FeatureCards() {
                         <Text fontWeight="bold" mb={1}>
                           Polygon Overlay:
                         </Text>
-                        <ChakraImage
+                        <ZoomableImage
+                          src={`${BASE_URL}${apiResponse.annotated_image}`}
+                          alt="Mask"
+                        />
+                        {/* <ChakraImage
                           src={`${BASE_URL}${apiResponse.annotated_image}`}
                           alt="Polygon Annotated"
                           borderRadius="md"
                           w="100%"
                           maxH="200px"
                           objectFit="contain"
-                        />
+                        /> */}
                       </Box>
                     </VStack>
                   )}
