@@ -1,24 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { restTransport } from "@/lib/api";
 
-const { post, get, put } = restTransport();
+const { get, post } = restTransport();
 
+// User authentication
 export const userLogin = async (body: any) => {
-  return await post("/user/signIn", body);
+  return await post("/login", body);
 };
 
-export const userMe = async (body: any) => {
-  return await get("/user/me", body);
+export const userLogout = async (body?: any) => {
+  return await post("/logout", body);
 };
 
-export const checkExistAccount = async (body: any) => {
-  return await post("/user/checkExistAccount", body);
+export const userMe = async () => {
+  return await get("/user/me");
 };
 
-export const CreateAccount = async (body: any) => {
-  return await post("/user/createAccount", body);
+// Documents
+export const addDocument = async (body: any) => {
+  return await post("/documents/add", body);
 };
 
-export const ChangePassword = async (body: any) => {
-  return await put("/user/changeMyPassword", body);
+// Chat
+export const sendChat = async (body: any) => {
+  return await post("/chat", body);
+};
+
+// Medical endpoints
+export const medicalDetect = async (body: any) => {
+  return await post("/medical/detect", body);
+};
+
+export const medicalClassify = async (body: any) => {
+  return await post("/medical/classify", body);
+};
+
+export const medicalSegment = async (body: any) => {
+  return await post("/medical/segment", body);
 };

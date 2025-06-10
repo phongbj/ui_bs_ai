@@ -15,8 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useRef, useState } from "react";
 import ZoomableImage from "./ZoomableImage";
-
-const BASE_URL = "http://localhost:8000";
+import { BASE_URL } from "@/config/const";
 
 type ClassificationResponse = {
   status: "success";

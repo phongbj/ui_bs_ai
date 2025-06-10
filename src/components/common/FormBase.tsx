@@ -24,19 +24,33 @@ const iconMap: Record<string, React.ElementType> = {
   LuMail: LuMail,
 };
 
-export function FormBase<T extends ZodSchema<any>>({
-  schema,
-  fields,
-  onSubmit,
-  columns = 2,
-  disableForm,
-  isSubmitting = false,
-  submitButtonText = "등록",
-  submitButtonClassName = "",
-  triggerValidation,
-  customErrors,
-  formMethodsRef,
-}: FormBaseProps<T>) {
+type FormBaseExtraProps = {
+  /** Màu viền input bình thường */
+  inputBorderColor?: string;
+  /** Màu viền khi có lỗi */
+  inputErrorBorderColor?: string;
+  /** Màu chữ của thông báo lỗi */
+  errorTextColor?: string;
+};
+
+export function FormBase<T extends ZodSchema<any>>(props: FormBaseProps<T> & FormBaseExtraProps) {
+  const {
+    schema,
+    fields,
+    onSubmit,
+    columns = 2,
+    disableForm,
+    isSubmitting = false,
+    submitButtonText = "등록",
+    submitButtonClassName = "",
+    triggerValidation,
+    customErrors,
+    formMethodsRef,
+    inputBorderColor = "gray.200",
+    inputErrorBorderColor = "red.500",
+    errorTextColor = "red.500",
+  } = props;
+
   const formMethods = useForm<TypeOf<T>>({
     resolver: zodResolver(schema),
   });
@@ -50,7 +64,7 @@ export function FormBase<T extends ZodSchema<any>>({
     setError,
   } = formMethods;
 
-   useEffect(() => {
+  useEffect(() => {
     if (formMethodsRef && typeof formMethodsRef === "object") {
       (formMethodsRef as React.RefObject<UseFormReturn<TypeOf<T>>>).current =
         formMethods;
@@ -72,77 +86,55 @@ export function FormBase<T extends ZodSchema<any>>({
         }
       }
     }
-  }, [customErrors, setError]); 
+  }, [customErrors, setError]);
 
   const renderField = (field: FieldConfig<keyof TypeOf<T> & string>) => {
     const error = errors?.[field.name];
 
     switch (field.type) {
       case "text":
-        return (
-          <Field.Root
-            key={field.name}
-            className="flex flex-col"
-            invalid={!!error}
-          >
-            <Field.Label>{field.label}{field.required && (
-              <span style={{ color: field.requiredColor ?? "red", marginLeft: "0.25rem" }}>*</span>
-            )}</Field.Label>
-            <InputGroup
-              startElement={
-                field.icon
-                  ? React.createElement(iconMap[field.icon], {
-                    size: field.iconSize || 20,
-                    color: field.iconColor || "gray",
-                  })
-                  : null
-              }
-            >
-              <Input
-                placeholder={field.placeholder}
-                defaultValue={field.defaultValue}
-                {...register(field.name as Path<TypeOf<T>>)}
-                disabled={disableForm}
-                className={`border p-2 rounded-lg pl-10 ${disableForm ? "bg-neutral-200 disabled:opacity-100" : ""
-                  } ${field.disabled ? "bg-neutral-200 disabled:opacity-100" : ""
-                  }`}
-              />
-            </InputGroup>
-            {error && <Field.ErrorText>{`${error.message}`}</Field.ErrorText>}
-          </Field.Root>
-        );
-
       case "password":
         return (
-          <Field.Root
-            key={field.name}
-            className="flex flex-col"
-            invalid={!!error}
-          >
-            <Field.Label>{field.label}{field.required && (
-              <span style={{ color: field.requiredColor ?? "red", marginLeft: "0.25rem" }}>*</span>
-            )}</Field.Label>
+          <Field.Root key={field.name} className="flex flex-col" invalid={!!error}>
+            <Field.Label>
+              {field.label}
+              {field.required && (
+                <span style={{ color: field.requiredColor ?? "red", marginLeft: "0.25rem" }}>*</span>
+              )}
+            </Field.Label>
             <InputGroup
               startElement={
                 field.icon
                   ? React.createElement(iconMap[field.icon], {
-                    size: field.iconSize || 20,
-                    color: field.iconColor || "gray",
-                  })
+                      size: field.iconSize || 20,
+                      color: field.iconColor || "gray",
+                    })
                   : null
               }
             >
               <Input
-                type="password"
+                type={field.type === "password" ? "password" : "text"}
                 placeholder={field.placeholder}
+                defaultValue={(field as any).defaultValue}
                 {...register(field.name as Path<TypeOf<T>>)}
-                disabled={disableForm}
-                className={`border p-2 rounded-lg pl-10 ${disableForm ? "bg-neutral-200 disabled:opacity-100" : ""
-                  } ${field.disabled ? "bg-neutral-200 disabled:opacity-100" : ""
-                  }`}
+                disabled={disableForm || field.disabled}
+                borderWidth="1px"
+                borderColor={error ? inputErrorBorderColor : inputBorderColor}
+                _hover={{
+                  borderColor: error ? inputErrorBorderColor : inputBorderColor,
+                }}
+                _focus={{
+                  borderColor: error ? inputErrorBorderColor : inputBorderColor,
+                  boxShadow: "none",
+                }}
+                className={`p-2 rounded-lg pl-10 ${disableForm || field.disabled ? "bg-neutral-200 disabled:opacity-100" : ""}`}
               />
             </InputGroup>
-            {error && <Field.ErrorText>{`${error.message}`}</Field.ErrorText>}
+            {error && (
+              <Field.ErrorText style={{ color: errorTextColor }}>
+                {`${error.message}`}
+              </Field.ErrorText>
+            )}
           </Field.Root>
         );
 
@@ -157,11 +149,7 @@ export function FormBase<T extends ZodSchema<any>>({
                 <RadioGroup.Root name={name} value={value} onChange={onChange}>
                   <HStack gap="6">
                     {field.options.map((opt) => (
-                      <RadioGroup.Item
-                        key={opt.value}
-                        value={opt.value}
-                        onBlur={onBlur}
-                      >
+                      <RadioGroup.Item key={opt.value} value={opt.value} onBlur={onBlur}>
                         <RadioGroup.ItemHiddenInput onBlur={onBlur} />
                         <RadioGroup.ItemIndicator />
                         <RadioGroup.ItemText>{opt.label}</RadioGroup.ItemText>
@@ -172,7 +160,9 @@ export function FormBase<T extends ZodSchema<any>>({
               )}
             />
             {error && (
-              <Fieldset.ErrorText className="text-xs">{`${error.message}`}</Fieldset.ErrorText>
+              <Fieldset.ErrorText className="text-xs" style={{ color: errorTextColor }}>
+                {`${error.message}`}
+              </Fieldset.ErrorText>
             )}
           </Fieldset.Root>
         );
@@ -186,16 +176,16 @@ export function FormBase<T extends ZodSchema<any>>({
               <Field.Root invalid={!!error} disabled={controllerField.disabled}>
                 <Checkbox.Root
                   checked={controllerField.value}
-                  onCheckedChange={({ checked }) =>
-                    controllerField.onChange(checked)
-                  }
+                  onCheckedChange={({ checked }) => controllerField.onChange(checked)}
                 >
                   <Checkbox.HiddenInput />
                   <Checkbox.Control />
                   <Checkbox.Label>{field.label}</Checkbox.Label>
                 </Checkbox.Root>
                 {error && (
-                  <Field.ErrorText>{`${error.message}`}</Field.ErrorText>
+                  <Field.ErrorText style={{ color: errorTextColor }}>
+                    {`${error.message}`}
+                  </Field.ErrorText>
                 )}
               </Field.Root>
             )}
@@ -204,16 +194,10 @@ export function FormBase<T extends ZodSchema<any>>({
 
       case "file":
         return (
-          <Field.Root
-            key={field.name}
-            className="flex flex-col"
-            invalid={!!error}
-          >
+          <Field.Root key={field.name} className="flex flex-col" invalid={!!error}>
             <Field.Label>{field.label}</Field.Label>
             <FileUpload.Root accept={["image/png"]}>
-              <FileUpload.HiddenInput
-                {...register(field.name as Path<TypeOf<T>>)}
-              />
+              <FileUpload.HiddenInput {...register(field.name as Path<TypeOf<T>>)} />
               <FileUpload.Trigger asChild>
                 <Button variant="outline" size="sm">
                   <HiUpload /> Upload file
@@ -221,7 +205,11 @@ export function FormBase<T extends ZodSchema<any>>({
               </FileUpload.Trigger>
               <FileUpload.List />
             </FileUpload.Root>
-            {error && <Field.ErrorText>{`${error.message}`}</Field.ErrorText>}
+            {error && (
+              <Field.ErrorText style={{ color: errorTextColor }}>
+                {`${error.message}`}
+              </Field.ErrorText>
+            )}
           </Field.Root>
         );
     }
@@ -242,11 +230,10 @@ export function FormBase<T extends ZodSchema<any>>({
     >
       {fields.map(renderField)}
       <div
-        className={`col-span-full flex justify-end ${disableForm ? "hidden" : ""
-          } ${submitButtonClassName}`}
+        className={`col-span-full flex justify-end ${disableForm ? "hidden" : ""} ${submitButtonClassName}`}
       >
         <Button
-          loading = {isSubmitting}
+          loading={isSubmitting}
           type="submit"
           className="bg-primary-400 text-white px-4 py-2 rounded-xl w-full"
         >

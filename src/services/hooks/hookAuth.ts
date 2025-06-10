@@ -1,80 +1,51 @@
+import {
+  userLogin,
+  userLogout,
+  userMe,
+  addDocument,
+  sendChat,
+  medicalDetect,
+  medicalClassify,
+  medicalSegment,
+} from "../apis/auth";
+import { useGetAPI, usePostAPI } from "./hookApi";
 
-import { ChangePassword, checkExistAccount, CreateAccount, userLogin, userMe } from "../apis/auth";
-import { usePostAPI, useGetAPI, usePutAPI } from "./hookApi";
-
-const useUserLogin = () => {
-  const {
-    loading,
-    post: postUserLogin,
-    error,
-    setError,
-  } = usePostAPI(userLogin);
-  return {
-    loading,
-    postUserLogin,
-    error,
-    setError,
-  };
+export const useUserLogin = () => {
+  const { loading, post, error, setError } = usePostAPI(userLogin);
+  return { loading, login: post, error, setError };
 };
 
-const useUserMe = () => {
-  const {
-    loading,
-    get: getuserMe,
-    error,
-    setError,
-  } = useGetAPI(userMe);
-  return {
-    loading,
-    getuserMe,
-    error,
-    setError,
-  };
+export const useUserLogout = () => {
+  const { loading, post, error, setError } = usePostAPI(userLogout);
+  return { loading, logout: post, error, setError };
 };
 
-const useUserCheckExistAccount = () => {
-  const {
-    loading,
-    post: postUserCheckExistAccount,
-    error,
-    setError,
-  } = usePostAPI(checkExistAccount);
-  return {
-    loading,
-    postUserCheckExistAccount,
-    error,
-    setError,
-  };
+export const useUserMe = () => {
+  const { loading, get, error, setError } = useGetAPI(userMe);
+  return { loading, getUserMe: get, error, setError };
 };
 
-const useUserCreateAccount = () => {
-  const {
-    loading,
-    post: postUserCreateAccount,
-    error,
-    setError,
-  } = usePostAPI(CreateAccount);
-  return {
-    loading,
-    postUserCreateAccount,
-    error,
-    setError,
-  };
+export const useAddDocument = () => {
+  const { loading, post, error, setError } = usePostAPI(addDocument);
+  return { loading, addDocument: post, error, setError };
 };
 
-const useUserChangePassword = () => {
-  const {
-    loading,
-    put: putUserChangePassword,
-    error,
-    setError,
-  } = usePutAPI(ChangePassword);
-  return {
-    loading,
-    putUserChangePassword,
-    error,
-    setError,
-  };
+export const useChat = () => {
+  const { loading, post, error, setError } = usePostAPI(sendChat);
+  return { loading, sendChat: post, error, setError };
 };
 
-export { useUserLogin, useUserMe, useUserCheckExistAccount, useUserCreateAccount, useUserChangePassword };
+export const useMedicalDetect = () => {
+  const { loading, post, error, setError } = usePostAPI(medicalDetect);
+  return { loading, medicalDetect: post, error, setError };
+};
+
+export const useMedicalClassify = () => {
+  const { loading, post, error, setError } = usePostAPI(medicalClassify);
+  return { loading, medicalClassify: post, error, setError };
+};
+
+export const useMedicalSegment = () => {
+  const { loading, post, error, setError } = usePostAPI(medicalSegment);
+  return { loading, medicalSegment: post, error, setError };
+};
